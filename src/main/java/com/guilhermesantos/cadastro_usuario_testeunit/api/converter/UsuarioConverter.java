@@ -1,6 +1,8 @@
 package com.guilhermesantos.cadastro_usuario_testeunit.api.converter;
 
 
+import com.guilhermesantos.cadastro_usuario_testeunit.api.request.EnderecoRequestDTO;
+import com.guilhermesantos.cadastro_usuario_testeunit.api.request.UsuarioRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
