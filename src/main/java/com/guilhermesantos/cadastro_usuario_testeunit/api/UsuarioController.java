@@ -1,45 +1,41 @@
 package com.guilhermesantos.cadastro_usuario_testeunit.api;
 
-import com.example.projetotestesjunit5.business.PessoaService;
-import com.example.projetotestesjunit5.infrastructure.entity.Pessoa;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
+
+import com.guilhermesantos.cadastro_usuario_testeunit.api.request.UsuarioRequestDTO;
+import com.guilhermesantos.cadastro_usuario_testeunit.api.response.UsuarioResponseDTO;
+import com.guilhermesantos.cadastro_usuario_testeunit.business.UsuarioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static java.lang.String.format;
-
-@RestController
-@RequestMapping(value = "/testes-junit5", produces = {"application/json"})
-@Slf4j
-@Tag(name = "open-api")
+@Controller
+@RequestMapping("/user")
+@RequiredArgsConstructor
 public class UsuarioController {
 
-    private final PessoaService service;
+    private final UsuarioService usuarioService;
 
-    public UsuarioController(PessoaService service) {
-        this.service = service;
+    @PostMapping()
+    public ResponseEntity<UsuarioResponseDTO> gravaDadosUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.ok(usuarioService.gravarUsuarios(usuarioRequestDTO));
     }
 
-    @Operation(summary = "Busca pessoa por cpf", method = "GET")
-
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Dados de requisição inválida"),
-            @ApiResponse(responseCode = "400", description = "Parametros inválidos"),
-            @ApiResponse(responseCode = "500", description = "Erro ao realizar busca dos dados"),
-    })
-    @GetMapping("/cpf")
-    @CrossOrigin(allowedHeaders = "*")
-    public ResponseEntity<List<Pessoa>> buscaDadosProfissionais(@RequestParam("cpf") String cpf) {
-        log.info(format("Buscando dados de pessoa por cpf = %s!", cpf));
-
-        return ResponseEntity.ok(service.buscaPessoasPorCpf(cpf));
-
+    @PutMapping()
+    public ResponseEntity<UsuarioResponseDTO> atualizaDadosUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.ok(usuarioService.atualizaCadastro(usuarioRequestDTO));
     }
+
+    @GetMapping()
+    public ResponseEntity<UsuarioResponseDTO> buscaUsuarioPorEmail(@RequestParam ("email") String email) {
+        return ResponseEntity.ok(usuarioService.buscaDadosUsuario(email));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deletaDadosUsuario(@RequestParam ("email") String email) {
+        usuarioService.deletaDadosUsuario(email);
+        return ResponseEntity.accepted().build();
+    }
+
+
 }
