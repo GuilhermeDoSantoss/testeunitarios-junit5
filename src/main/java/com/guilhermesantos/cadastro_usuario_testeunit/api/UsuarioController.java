@@ -18,11 +18,11 @@ import static java.lang.String.format;
 @RequestMapping(value = "/testes-junit5", produces = {"application/json"})
 @Slf4j
 @Tag(name = "open-api")
-public class PessoaController {
+public class UsuarioController {
 
     private final PessoaService service;
 
-    public PessoaController(PessoaService service) {
+    public UsuarioController(PessoaService service) {
         this.service = service;
     }
 
