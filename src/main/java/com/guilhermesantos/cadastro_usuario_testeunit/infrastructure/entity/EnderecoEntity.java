@@ -2,7 +2,6 @@ package com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import java.util.Objects;
 
@@ -35,7 +34,7 @@ public class EnderecoEntity {
     private String cidade;
 
     @Column(name = "cep")
-    private String cep;pOWal6OjrNdtUy8z angelicaweilerw
+    private String cep;
 
     @Override
     public boolean equals(Object o) {

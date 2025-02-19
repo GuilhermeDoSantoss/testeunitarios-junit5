@@ -6,6 +6,7 @@ import com.guilhermesantos.cadastro_usuario_testeunit.api.converter.UsuarioMappe
 import com.guilhermesantos.cadastro_usuario_testeunit.api.converter.UsuarioUpdateMapper;
 import com.guilhermesantos.cadastro_usuario_testeunit.api.request.UsuarioRequestDTO;
 import com.guilhermesantos.cadastro_usuario_testeunit.api.response.UsuarioResponseDTO;
+import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.entity.UsuarioEntity;
 import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.exception.BusinessException;
 import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
