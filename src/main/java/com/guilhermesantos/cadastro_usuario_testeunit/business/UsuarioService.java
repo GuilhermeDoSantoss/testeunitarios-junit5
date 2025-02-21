@@ -46,7 +46,7 @@ public class UsuarioService {
             UsuarioEntity entity = usuarioUpdateMapper.updateUsuarioFromDTO(usuarioRequestDTO, usuario);
             return usuarioMapper.paraUsuarioResponseDTO(salvaUsuario(entity));
         } catch (Exception e) {
-            throw new BusinessException("Erro ao gravar dados de usuário");
+            throw new BusinessException("Erro ao gravar dados de usuário", e);
         }
     }
 

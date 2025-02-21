@@ -23,16 +23,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static sun.nio.cs.Surrogate.is;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
@@ -67,6 +64,8 @@ public class UsuarioServiceTest {
 
     EnderecoResponseDTO enderecoResponseDTO;
 
+    String email;
+
     @BeforeEach
     public void setup(){
 
@@ -89,6 +88,8 @@ public class UsuarioServiceTest {
 
         usuarioResponseDTO = UsuarioResponseDTOFixture.build(1452L,"Usuario", "usuario@gmail.com",
                 "12345678", enderecoResponseDTO);
+
+        email = "usario@gmail.com";
 
     }
 
@@ -159,5 +160,85 @@ public class UsuarioServiceTest {
         verify(usuarioRepository).saveAndFlush(usuarioEntity);
         verifyNoInteractions(usuarioMapper);
         verifyNoMoreInteractions(usuarioRepository, usuarioConverter);
+    }
+
+    @Test
+    void deveAtualizarCadastroDeUsuariosComSucesso(){
+
+        when(usuarioRepository.findByEmail(email)).thenReturn(usuarioEntity);
+        when(usuarioUpdateMapper.updateUsuarioFromDTO(usuarioRequestDTO, usuarioEntity)).thenReturn(usuarioEntity);
+        when(usuarioConverter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
+        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
+        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
+
+        UsuarioResponseDTO dto = usuarioService.atualizaCadastro(usuarioRequestDTO);
+
+        assertEquals(dto, usuarioResponseDTO);
+        verify(usuarioRepository).findByEmail(email);
+        verify(usuarioUpdateMapper).updateUsuarioFromDTO(usuarioRequestDTO,usuarioEntity);
+        verify(usuarioRepository).saveAndFlush(usuarioEntity);
+        verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
+        verifyNoMoreInteractions(usuarioRepository, usuarioUpdateMapper, usuarioMapper);
+    }
+
+    @Test
+    void naoDeveAtualizarDadosDeUsuariosCasoUsuarioRequestDTONull(){
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> usuarioService.atualizaCadastro(null));
+
+        assertThat(e, notNullValue());
+        assertThat(e.getMessage(), CoreMatchers.is("Erro ao gravar dados de usuário"));
+        assertThat(e.getCause(), notNullValue());
+        assertThat(e.getCause().getMessage(), CoreMatchers.is("Os dados do usuário são obrigatórios"));
+        verifyNoMoreInteractions(usuarioMapper, usuarioUpdateMapper, usuarioRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarUsuario(){
+
+        when(usuarioRepository.findByEmail(email)).thenThrow(new RuntimeException("Falha ao buscar dados do usuário"));
+
+        BusinessException e = assertThrows(BusinessException.class, () -> usuarioService.atualizaCadastro(usuarioRequestDTO));
+
+        assertThat(e, notNullValue());
+        assertThat(e.getMessage(), CoreMatchers.is("Erro ao gravas dados de usuário"));
+        assertThat(e.getCause().getClass(), CoreMatchers.is(RuntimeException.class));
+        assertThat(e.getCause().getMessage(), CoreMatchers.is("Falha ao buscar dados de usuário"));
+        verify(usuarioRepository).findByEmail(email);
+        verifyNoInteractions(usuarioMapper, usuarioUpdateMapper);
+        verifyNoMoreInteractions(usuarioRepository);
+    }
+
+    @Test
+    void DeveBuscarDadosDeUsuarioComSucesso(){
+
+        when(usuarioRepository.findByEmail(email)).thenReturn(usuarioEntity);
+        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
+
+        UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
+
+        verify(usuarioRepository).findByEmail(email);
+        verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
+        assertEquals(dto, usuarioResponseDTO);
+    }
+
+    @Test
+    void deveRetornarNullCasoUsuarioNaoEncontrado(){
+        when(usuarioRepository.findByEmail(email)).thenReturn(null);
+
+       UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
+
+       assertEquals(dto, null);
+       verify(usuarioRepository).findByEmail(email);
+       verifyNoInteractions(usuarioMapper);
+    }
+
+    @Test
+    void deveDeletarDadosDeUsuarioComSucesso(){
+        doNothing().when(usuarioRepository).deleteByEmail(email);
+
+        usuarioService.deletaDadosUsuario(email);
+
+        verify(usuarioRepository).deleteByEmail(email);
     }
 }
