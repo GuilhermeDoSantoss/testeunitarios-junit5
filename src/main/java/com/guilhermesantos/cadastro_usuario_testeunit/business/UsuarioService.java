@@ -10,6 +10,7 @@ import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.entity.Usua
 import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.exception.BusinessException;
 import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.util.Assert.notNull;
@@ -34,7 +35,7 @@ public class UsuarioService {
             UsuarioEntity usuarioEntity = salvaUsuario(usuarioConverter.paraUsuarioEntity(usuarioRequestDTO));
             return usuarioMapper.paraUsuarioResponseDTO(usuarioEntity);
         } catch (Exception e) {
-            throw new BusinessException("Erro ao gravar dados de usuário", e);
+            throw new BusinessException("Erro ao gravar dados de usuário");
         }
     }
 
@@ -45,14 +46,14 @@ public class UsuarioService {
             UsuarioEntity entity = usuarioUpdateMapper.updateUsuarioFromDTO(usuarioRequestDTO, usuario);
             return usuarioMapper.paraUsuarioResponseDTO(salvaUsuario(entity));
         } catch (Exception e) {
-            throw new BusinessException("Erro ao gravar dados de usuário", e);
+            throw new BusinessException("Erro ao gravar dados de usuário");
         }
     }
 
     public UsuarioResponseDTO buscaDadosUsuario(String email) {
             UsuarioEntity entity = usuarioRepository.findByEmail(email);
 
-            return entity != null ? usuarioMapper.paraUsuarioResponseDTO(entity) : null;
+            return entity != null ? usuarioMapper.paraUsuarioResponseDTO(usuarioRepository) : null;
     }
 
     public void deletaDadosUsuario(String email) {

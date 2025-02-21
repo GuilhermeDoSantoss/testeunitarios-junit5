@@ -1,6 +1,8 @@
 package com.guilhermesantos.cadastro_usuario_testeunit.api.converter;
 
 
+import com.guilhermesantos.cadastro_usuario_testeunit.api.request.UsuarioRequestDTO;
+import com.guilhermesantos.cadastro_usuario_testeunit.infrastructure.entity.UsuarioEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
